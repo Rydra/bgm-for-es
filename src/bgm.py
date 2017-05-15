@@ -99,9 +99,9 @@ class Application:
         if not newState["esRunning"]:
             print("esNotRunning")
 
-        if not self.restart and previousState["emulatorIsRunning"] and not newState["emulatorIsRunning"]:
+        if self.musicPlayer.isPaused and not newState["emulatorIsRunning"]:
             print("Fading up")
-            self.musicPlayer.fadeUpMusic(self.restart)
+            self.musicPlayer.fadeUpMusic()
 
         elif newState["musicIsDisabled"] or (not newState["esRunning"] and not newState["emulatorIsRunning"]):
             print("Music disabled! Stop")
