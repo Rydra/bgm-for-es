@@ -6,6 +6,7 @@ from Queue import LifoQueue
 from MusicPlayer import MusicPlayer
 from ProcessService import ProcessService
 
+
 class Application:
     random.seed()
 
@@ -50,7 +51,7 @@ class Application:
 
         return songQueue
 
-    def updateState(self):
+    def getState(self):
 
         state = {
             "musicIsDisabled": self.musicIsDisabled(),
@@ -92,6 +93,33 @@ class Application:
             while os.path.exists('/proc/' + omxplayerPid):
                 time.sleep(1)
 
+    def executeState(self, previousState):
+        newState = self.getState()
+
+        if not newState["esRunning"]:
+            print("esNotRunning")
+
+        if not self.restart and previousState["emulatorIsRunning"] and not newState["emulatorIsRunning"]:
+            print("Fading up")
+            self.musicPlayer.fadeUpMusic(self.restart)
+
+        elif newState["musicIsDisabled"] or (not newState["esRunning"] and not newState["emulatorIsRunning"]):
+            print("Music disabled! Stop")
+            self.musicPlayer.stop()
+
+        elif newState["esRunning"] and not newState["emulatorIsRunning"]:
+            print("I'm playing a song")
+            self.playNewSongIfSilent()
+
+        elif newState["songIsBeingPlayed"] and newState["emulatorIsRunning"]:
+            print("Fading down")
+            self.musicPlayer.fadeDownMusic(self.restart)
+
+        else:
+            print("Nothing to do. Waiting...")
+
+        return newState
+
     def run(self):
 
         # Delay audio start per config option above
@@ -100,36 +128,12 @@ class Application:
 
         self.waitomxPlayer()
 
-        state = self.updateState()
+        previousState = self.getState()
+
         while True:
-            newstate = self.updateState()
+            previousState = self.executeState(previousState)
 
-            if not newstate["esRunning"]:
-                print("esNotRunning")
-
-            if not self.restart and state["emulatorIsRunning"] and not newstate["emulatorIsRunning"]:
-                print("Fading up")
-                self.musicPlayer.fadeUpMusic(self.restart)
-
-            elif newstate["musicIsDisabled"] or (not newstate["esRunning"] and not newstate["emulatorIsRunning"]):
-                print("Music disabled! Stop")
-                self.musicPlayer.stop()
-
-            elif newstate["esRunning"] and not newstate["emulatorIsRunning"]:
-                print("I'm playing a song")
-                self.playNewSongIfSilent()
-
-            elif newstate["songIsBeingPlayed"] and newstate["emulatorIsRunning"]:
-                print("Fading down")
-                self.musicPlayer.fadeDownMusic(self.restart)
-
-            else:
-                print("Nothing to do. Waiting...")
-
-            state = newstate
             time.sleep(2)
-
-        print("An error has occurred that has stopped Test1.py from executing.")
 
 
 if __name__ == '__main__':

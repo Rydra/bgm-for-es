@@ -29,7 +29,6 @@ class ProcessService:
             try:
                 procname = self.getProcessName(pid)
                 if procname[:-1] in processNames:
-                    # print "Emulator found! " + procname + " Muting the music..."
                     return True
 
             except IOError:
