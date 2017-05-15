@@ -1,6 +1,7 @@
 from pygame import mixer
 import time
 
+
 class MusicPlayer:
     def __init__(self):
         mixer.init()

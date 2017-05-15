@@ -2,6 +2,7 @@ import os
 import random
 import time
 from Queue import LifoQueue
+from ConfigParser import SafeConfigParser
 
 from MusicPlayer import MusicPlayer
 from ProcessService import ProcessService
@@ -10,15 +11,14 @@ from ProcessService import ProcessService
 class Application:
     random.seed()
 
-    def __init__(self, processService, musicPlayer):
-        self.processService = processService
-        self.musicPlayer = musicPlayer
+    def __init__(self, process_service, music_player, settings):
+        self.processService = process_service
+        self.musicPlayer = music_player
 
-        self.startdelay = 0  # Value (in seconds) to delay audio start.  If you have a splash screen with audio and the script is playing music over the top of it, increase this value to delay the script from starting.
-        self.musicdir = '/home/pi/RetroPie/music'
-
-        self.restart = True  # If true, this will cause the script to fade the music out and -stop- the song rather than pause it.
-        self.startsong = ""  # if this is not blank, this is the EXACT, CaSeSeNsAtIvE filename of the song you always want to play first on boot.
+        self.startdelay = settings.getint("default", "startdelay")
+        self.musicdir = settings.get("default", "musicdir")
+        self.restart = settings.getboolean("default", "restart")
+        self.startsong = settings.get("default", "startsong")
 
         self.songQueue = self.getRandomQueue()
 
@@ -35,21 +35,19 @@ class Application:
 
     def getRandomQueue(self):
 
-        songQueue = LifoQueue()
+        song_queue = LifoQueue()
+        song_list = self.getSongs()
 
-        songList = self.getSongs()
+        if self.startsong in song_list:
+            song_queue.put(self.startsong)
+            song_list.remove(self.startsong)
 
-        # Check for a starting song
-        if self.startsong in songList:
-            songQueue.put(self.startsong)
-            songList.remove(self.startsong)
+        while len(song_list) > 0:
+            song_to_add = random.randint(0, len(song_list) - 1)
+            song_queue.put(song_list[song_to_add])
+            song_list.remove(song_list[song_to_add])
 
-        while len(songList) > 0:
-            songToAdd = random.randint(0, len(songList) - 1)
-            songQueue.put(songList[songToAdd])
-            songList.remove(songList[songToAdd])
-
-        return songQueue
+        return song_queue
 
     def getState(self):
 
@@ -62,16 +60,39 @@ class Application:
 
         return state
 
-    def waitForProcess(self, processName):
-        while not self.processService.processIsRunning(processName):
+    def waitForProcess(self, process_name):
+        while not self.processService.processIsRunning(process_name):
             time.sleep(1)
 
     def musicIsDisabled(self):
         return os.path.exists('/home/pi/PyScripts/DisableMusic')
 
-    def playNewSongIfSilent(self):
-        if not self.musicPlayer.isPlaying:
+    def waitomxPlayer(self):
+        # Look for OMXplayer - if it's running, someone's got a splash screen going!
 
+        omxplayer_pid = self.processService.findPid("omxplayer")
+        if omxplayer_pid != -1:
+            while os.path.exists('/proc/' + omxplayer_pid):
+                time.sleep(1)  # OMXPlayer is running, sleep 1 to prevent the need for a splash.
+
+        omxplayer_pid = self.processService.findPid("omxplayer.bin")
+        if omxplayer_pid != -1:
+            while os.path.exists('/proc/' + omxplayer_pid):
+                time.sleep(1)
+
+    def executeState(self):
+        new_state = self.getState()
+
+        if self.musicPlayer.isPaused and not new_state["emulatorIsRunning"]:
+            print("Fading up")
+            self.musicPlayer.fadeUpMusic()
+
+        elif new_state["musicIsDisabled"] or (not new_state["esRunning"] and not new_state["emulatorIsRunning"]):
+            print("Music disabled! Stop")
+            self.musicPlayer.stop()
+            time.sleep(2)
+
+        elif new_state["esRunning"] and not new_state["emulatorIsRunning"] and not self.musicPlayer.isPlaying:
             if self.songQueue.empty():
                 self.songQueue = self.getRandomQueue()
 
@@ -79,46 +100,15 @@ class Application:
             self.musicPlayer.playSong(song)
 
             print("BGM Now Playing: " + song)
+            time.sleep(2)
 
-    def waitomxPlayer(self):
-        # Look for OMXplayer - if it's running, someone's got a splash screen going!
-
-        omxplayerPid = self.processService.findPid("omxplayer")
-        if omxplayerPid != -1:
-            while os.path.exists('/proc/' + omxplayerPid):
-                time.sleep(1)  # OMXPlayer is running, sleep 1 to prevent the need for a splash.
-
-        omxplayerPid = self.processService.findPid("omxplayer.bin")
-        if omxplayerPid != -1:
-            while os.path.exists('/proc/' + omxplayerPid):
-                time.sleep(1)
-
-    def executeState(self, previousState):
-        newState = self.getState()
-
-        if not newState["esRunning"]:
-            print("esNotRunning")
-
-        if self.musicPlayer.isPaused and not newState["emulatorIsRunning"]:
-            print("Fading up")
-            self.musicPlayer.fadeUpMusic()
-
-        elif newState["musicIsDisabled"] or (not newState["esRunning"] and not newState["emulatorIsRunning"]):
-            print("Music disabled! Stop")
-            self.musicPlayer.stop()
-
-        elif newState["esRunning"] and not newState["emulatorIsRunning"]:
-            print("I'm playing a song")
-            self.playNewSongIfSilent()
-
-        elif newState["songIsBeingPlayed"] and newState["emulatorIsRunning"]:
+        elif new_state["songIsBeingPlayed"] and new_state["emulatorIsRunning"]:
             print("Fading down")
-            self.musicPlayer.fadeDownMusic(self.restart)
+            self.musicPlayer.fadeDownMusic(not self.restart)
 
         else:
             print("Nothing to do. Waiting...")
-
-        return newState
+            time.sleep(2)
 
     def run(self):
 
@@ -128,13 +118,11 @@ class Application:
 
         self.waitomxPlayer()
 
-        previousState = self.getState()
-
         while True:
-            previousState = self.executeState(previousState)
-
-            time.sleep(2)
+            self.executeState()
 
 
 if __name__ == '__main__':
-    Application(ProcessService(), MusicPlayer()).run()
+    config = SafeConfigParser()
+    config.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini'))
+    Application(ProcessService(), MusicPlayer(), config).run()
