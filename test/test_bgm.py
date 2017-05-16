@@ -61,6 +61,7 @@ class BgmShould(TestCase):
             .theFollowingProcessesAreRunning("emulationstatio") \
             .theFollowingSongsArePresent(['file1.ogg', 'file2.ogg', 'file3.ogg']) \
             .theMusicIsDisabled() \
+            .aSongIsBeingPlayed()\
             .build()
 
         app.executeState()
@@ -82,6 +83,7 @@ class BgmShould(TestCase):
         scenario_maker = self._ScenarioMaker()
         app = scenario_maker \
             .theFollowingSongsArePresent(['file1.ogg', 'file2.ogg', 'file3.ogg']) \
+            .aSongIsBeingPlayed()\
             .build()
 
         app.executeState()
