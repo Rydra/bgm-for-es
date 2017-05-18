@@ -1,7 +1,9 @@
 import os
 from unittest import TestCase
+
 from mock import MagicMock
-from src.bgm import Application
+
+from bgm.bgm import Application
 
 
 class BgmShould(TestCase):
