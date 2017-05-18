@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from mock import MagicMock
 
-from bgm.bgm import Application
+from bgm.Application import Application
 
 
 class BgmShould(TestCase):

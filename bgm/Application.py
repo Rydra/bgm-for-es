@@ -1,7 +1,3 @@
-from ConfigParser import SafeConfigParser
-
-from MusicPlayer import MusicPlayer
-from ProcessService import ProcessService
 from State import *
 
 
@@ -86,9 +82,3 @@ class Application:
 
         while True:
             self.executeState()
-
-
-if __name__ == '__main__':
-    config = SafeConfigParser()
-    config.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini'))
-    Application(ProcessService(), MusicPlayer(), config).run()
