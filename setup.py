@@ -13,5 +13,6 @@ setup(
     description='Allows you to add background music to EmulationStation',
     requires=['mock'],
     data_files=[('/lib/systemd/system', ['service/bgm.service']),
-                ('/etc', ['cfg/bgmconfig.ini'])]
+                ('/etc', ['cfg/bgmconfig.ini']),
+                ('/home/pi/RetroPie/music', ['extra/PLACE_YOUR_MUSIC_HERE'])]
 )
