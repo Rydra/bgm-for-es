@@ -12,6 +12,6 @@ setup(
     author_email='davigetto@gmail.com',
     description='Allows you to add background music to EmulationStation',
     requires=['mock'],
-    data_files=[('/etc/init.d', ['bgm.d']),
+    data_files=[('/lib/systemd/system', ['service/bgm.service']),
                 ('/etc', ['cfg/bgmconfig.ini'])]
 )

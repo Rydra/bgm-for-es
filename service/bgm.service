@@ -1,0 +1,9 @@
+[Unit]
+Description=EmulationStation BGM
+After=network.target sound.target
+
+[Service]
+ExecStart=/usr/bin/python /usr/bin/startbgm
+
+[Install]
+WantedBy=multi-user.target
