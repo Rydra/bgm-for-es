@@ -1,0 +1,11 @@
+ http://www.raspberrypi-spy.co.uk/2015/10/how-to-autorun-a-python-script-on-boot-using-systemd/
+ https://www.raspberrypi.org/forums/viewtopic.php?t=40160&p=328867
+ https://faceted.wordpress.com/2011/05/18/howto-build-a-trivial-debian-package-with-dh_make/
+ https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/quickstart.html
+ https://docs.python.org/2/distutils/configfile.html
+ https://pypi.python.org/pypi/stdeb/0.8.5#quickstart-2-just-tell-me-the-fastest-way-to-make-a-deb
+ http://shallowsky.com/blog/programming/python-debian-packages-w-stdeb.html
+ GEMFIRE <- deb hosting
+https://blog.al4.co.nz/2016/09/building-packaging-python-command-line-tool-debian/
+
+https://docs.google.com/presentation/d/1-g0UYgV72jwtyeFLHYqz0Sh56VSiCiGHn5Bu3TW2hUM/edit#slide=id.gc01d1790_0137
