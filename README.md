@@ -11,7 +11,7 @@ sudo apt update
 sudo apt install python-pygame python-es-bgm
 ```
 
-These commands will update your sources and install the python-es-bgm package which will run your music. Afterwards, reboot your Raspberry:
+These commands will update your sources and install the python-es-bgm package which will run your music. Afterwards, place your music in the music folder (as described in the _How it works_ section and either restart EmulationStation or reboot your Raspberry. Enjoy your new EmulationStation with background music.
 
 ```bash
 sudo reboot

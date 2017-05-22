@@ -1,5 +1,6 @@
 from distutils.core import setup
 
+
 setup(
     name='es-bgm',
     version='1.0',
@@ -11,7 +12,7 @@ setup(
     author='David Jimenez',
     author_email='davigetto@gmail.com',
     description='Allows you to add background music to EmulationStation',
-    requires=['mock'],
+    requires=['mock', 'pytest'],
     data_files=[('/lib/systemd/system', ['service/bgm.service']),
                 ('/etc', ['cfg/bgmconfig.ini']),
                 ('/home/pi/RetroPie/music', ['extra/PLACE_YOUR_MUSIC_HERE'])]
