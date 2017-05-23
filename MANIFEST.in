@@ -1,0 +1,3 @@
+include cfg/bgmconfig.ini
+include service/bgm.service
+include extra/PLACE_YOUR_MUSIC_HERE

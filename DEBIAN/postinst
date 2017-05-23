@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "Enabling background music daemon..."
+systemctl daemon-reload
+systemctl enable bgm
+systemctl start bgm
+
+echo "Done. Please restart EmulationStation to hear your music :)"

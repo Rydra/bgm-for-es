@@ -1,11 +1,13 @@
 .ONESHELL:
 debian-package:
-	python setup.py --command-packages=stdeb.command bdist_deb
+	python setup.py --command-packages=stdeb.command sdist_dsc
 	cd deb_dist/es-bgm-*
-	echo "systemctl daemon-reload" >> debian/postinst
-	echo "systemctl enable bgm" >> debian/postinst
-	echo "systemctl start bgm" >> debian/postinst
-	dpkg-buildpackage -rfakeroot -uc -us
+
+	cp ../../DEBIAN/conffiles debian/
+	cp ../../DEBIAN/postinst debian/
+	cp ../../DEBIAN/postrm debian/
+
+	dpkg-buildpackage -rfakeroot -b -uc -us
 
 tests:
-	py.test
+	python setup.py test

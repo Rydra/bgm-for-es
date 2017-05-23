@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Disabling background music daemon..."
+systemctl disable bgm
+systemctl stop bgm
+systemctl daemon-reload
