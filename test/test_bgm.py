@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from mock import MagicMock
 
-from bgm.Application import Application
+from bgm.Application import Application, State
 
 
 class BgmShould(TestCase):
@@ -57,6 +57,18 @@ class BgmShould(TestCase):
 
         scenario_maker.assertMusicHasFadeUp()
 
+    def test_play_another_song_if_song_has_ended(self):
+        scenario_maker = self._ScenarioMaker()
+        app = scenario_maker \
+            .theFollowingProcessesAreRunning("emulationstatio") \
+            .theFollowingSongsArePresent(['file1.ogg', 'file2.ogg', 'file3.ogg']) \
+            .musicWasBeingPlayed() \
+            .build()
+
+        app.executeState()
+
+        scenario_maker.assertASongFromTheDirectoryIsBeingPlayed(self)
+
     def test_stop_music_if_music_is_disabled(self):
         scenario_maker = self._ScenarioMaker()
         app = scenario_maker \
@@ -70,7 +82,7 @@ class BgmShould(TestCase):
 
         scenario_maker.assertMusicHasBeenStopped()
 
-    def test_do_nothing_if_ES_is_not_running_but_emulator_isr_running(self):
+    def test_do_nothing_if_ES_is_not_running_but_emulator_is_running(self):
         scenario_maker = self._ScenarioMaker()
         app = scenario_maker \
             .theFollowingSongsArePresent(['file1.ogg', 'file2.ogg', 'file3.ogg']) \
@@ -117,6 +129,8 @@ class BgmShould(TestCase):
 
     class _ScenarioMaker:
         def __init__(self):
+            self.forced_state = None
+
             self.processService = MagicMock()
             self.processService.anyProcessIsRunning = MagicMock(return_value=False)
             self.processService.findPid = MagicMock(return_vale=-1)
@@ -158,6 +172,10 @@ class BgmShould(TestCase):
             os.path.exists = MagicMock(side_effect=lambda _: True)
             return self
 
+        def musicWasBeingPlayed(self):
+            self.forced_state = State.playingMusic
+            return self
+
         def build(self):
             default_config = {
                 "startdelay": 0,
@@ -170,7 +188,7 @@ class BgmShould(TestCase):
             self.config.getint.side_effect = lambda x, y: default_config[y]
             self.config.get.side_effect = lambda x, y: default_config[y]
 
-            return Application(self.processService, self.musicPlayer, self.config)
+            return Application(self.processService, self.musicPlayer, self.config, self.forced_state)
 
         def assertASongFromTheDirectoryIsBeingPlayed(self, test):
             args, kwargs = self.musicPlayer.playSong.call_args
@@ -193,3 +211,4 @@ class BgmShould(TestCase):
             self.musicPlayer.fadeUpMusic.assert_not_called()
             self.musicPlayer.fadeDownMusic.assert_not_called()
             self.musicPlayer.playSong.assert_not_called()
+
