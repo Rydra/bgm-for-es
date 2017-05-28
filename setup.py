@@ -9,7 +9,7 @@ def get_test_suite():
 
 setup(
     name='es-bgm',
-    version='1.0',
+    version='1.0.1',
     packages=['bgm'],
     url='',
     license='GPL',

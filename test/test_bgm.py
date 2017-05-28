@@ -14,7 +14,7 @@ class BgmShould(TestCase):
             .theFollowingSongsArePresent(['file1.ogg', 'file2.ogg', 'file3.ogg']) \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertASongFromTheDirectoryIsBeingPlayed(self)
 
@@ -28,7 +28,7 @@ class BgmShould(TestCase):
             .aSongIsBeingPlayed() \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertMusicHasFadeDown(pause=True)
 
@@ -41,7 +41,7 @@ class BgmShould(TestCase):
             .aSongIsBeingPlayed() \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertMusicHasFadeDown(pause=False)
 
@@ -53,7 +53,7 @@ class BgmShould(TestCase):
             .aSongIsPaused() \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertMusicHasFadeUp()
 
@@ -65,7 +65,7 @@ class BgmShould(TestCase):
             .musicWasBeingPlayed() \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertASongFromTheDirectoryIsBeingPlayed(self)
 
@@ -78,7 +78,7 @@ class BgmShould(TestCase):
             .aSongIsBeingPlayed()\
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertMusicHasBeenStopped()
 
@@ -89,7 +89,7 @@ class BgmShould(TestCase):
             .anEmulatorIsRunning() \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertNothingHasBeenDone()
 
@@ -100,7 +100,7 @@ class BgmShould(TestCase):
             .aSongIsBeingPlayed()\
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertMusicHasBeenStopped()
 
@@ -112,7 +112,7 @@ class BgmShould(TestCase):
             .aSongIsBeingPlayed() \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertNothingHasBeenDone()
 
@@ -123,7 +123,7 @@ class BgmShould(TestCase):
             .anEmulatorIsRunning() \
             .build()
 
-        app.executeState()
+        app.execute_state()
 
         scenario_maker.assertNothingHasBeenDone()
 

@@ -18,17 +18,17 @@ class MusicPlayer:
     def isPaused(self):
         return self.isPaused
 
-    def setVolume(self, volume):
+    def set_volume(self, volume):
         self.volume = volume
         mixer.music.set_volume(volume)
 
-    def playSong(self, song):
+    def play_song(self, song):
         mixer.music.load(song)
         self.isPaused = False
-        self.setVolume(self.maxvolume)
+        self.set_volume(self.maxvolume)
         mixer.music.play()
 
-    def stopMusicIfPlaying(self):
+    def stop_music_if_playing(self):
         if mixer.music.get_busy():
             self.isPaused = False
             mixer.music.stop()
@@ -46,13 +46,13 @@ class MusicPlayer:
         self.isPaused = False
         mixer.music.unpause()
 
-    def fadeDownMusic(self, pause):
+    def fade_down_music(self, pause):
         while self.volume > 0:
             self.volume = self.volume - self.volumefadespeed
             if self.volume < 0:
                 self.volume = 0
 
-            self.setVolume(self.volume)
+            self.set_volume(self.volume)
             time.sleep(0.05)
 
         if pause:
@@ -60,12 +60,12 @@ class MusicPlayer:
         else:
             self.stop()
 
-    def fadeUpMusic(self):
+    def fade_up_music(self):
         self.unpause()
         while self.volume < self.maxvolume:
-            self.volume = self.volume + self.volumefadespeed;
+            self.volume = self.volume + self.volumefadespeed
             if self.volume > self.maxvolume:
                 self.volume = self.maxvolume
 
-            self.setVolume(self.volume)
+            self.set_volume(self.volume)
             time.sleep(0.05)
