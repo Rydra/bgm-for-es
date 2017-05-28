@@ -132,9 +132,9 @@ class BgmShould(TestCase):
             self.forced_state = None
 
             self.processService = MagicMock()
-            self.processService.anyProcessIsRunning = MagicMock(return_value=False)
-            self.processService.findPid = MagicMock(return_vale=-1)
-            self.processService.processIsRunning = MagicMock(side_effect=lambda x: False)
+            self.processService.any_process_is_running = MagicMock(return_value=False)
+            self.processService.find_pid = MagicMock(return_vale=-1)
+            self.processService.process_is_running = MagicMock(side_effect=lambda x: False)
             self.config = MagicMock()
 
             self.restart = True
@@ -149,11 +149,11 @@ class BgmShould(TestCase):
             return self
 
         def theFollowingProcessesAreRunning(self, *processes):
-            self.processService.processIsRunning = MagicMock(side_effect=lambda x: x in processes)
+            self.processService.process_is_running = MagicMock(side_effect=lambda x: x in processes)
             return self
 
         def anEmulatorIsRunning(self):
-            self.processService.anyProcessIsRunning = MagicMock(return_value=True)
+            self.processService.any_process_is_running = MagicMock(return_value=True)
             return self
 
         def pauseOnEmulatorRun(self):
@@ -191,24 +191,24 @@ class BgmShould(TestCase):
             return Application(self.processService, self.musicPlayer, self.config, self.forced_state)
 
         def assertASongFromTheDirectoryIsBeingPlayed(self, test):
-            args, kwargs = self.musicPlayer.playSong.call_args
+            args, kwargs = self.musicPlayer.play_song.call_args
             test.assertTrue(args[0] in [os.path.join('/home/pi/RetroPie/music', 'file1.ogg'),
                                         os.path.join('/home/pi/RetroPie/music', 'file2.ogg'),
                                         os.path.join('/home/pi/RetroPie/music', 'file3.ogg')])
-            self.musicPlayer.playSong.assert_called_once()
+            self.musicPlayer.play_song.assert_called_once()
 
         def assertMusicHasFadeDown(self, pause):
-            self.musicPlayer.fadeDownMusic.assert_called_once_with(pause)
+            self.musicPlayer.fade_down_music.assert_called_once_with(pause)
 
         def assertMusicHasFadeUp(self):
-            self.musicPlayer.fadeUpMusic.assert_called_once()
+            self.musicPlayer.fade_up_music.assert_called_once()
 
         def assertMusicHasBeenStopped(self):
             self.musicPlayer.stop.assert_called_once()
 
         def assertNothingHasBeenDone(self):
             self.musicPlayer.stop.assert_not_called()
-            self.musicPlayer.fadeUpMusic.assert_not_called()
-            self.musicPlayer.fadeDownMusic.assert_not_called()
-            self.musicPlayer.playSong.assert_not_called()
+            self.musicPlayer.fade_up_music.assert_not_called()
+            self.musicPlayer.fade_down_music.assert_not_called()
+            self.musicPlayer.play_song.assert_not_called()
 

@@ -50,10 +50,10 @@ class Application:
         self.musicPlayer.fade_down_music(not self.restart)
 
     def play_music(self):
-        if self.songQueue.empty():
-            self.songQueue = self.get_random_queue()
+        if self.song_queue.empty():
+            self.song_queue = self.get_random_queue()
 
-        song = os.path.join(self.musicdir, self.songQueue.get())
+        song = os.path.join(self.musicdir, self.song_queue.get())
         self.musicPlayer.play_song(song)
 
     # CONDITIONS
@@ -76,7 +76,14 @@ class Application:
     def music_is_not_playing(self, status):
         return not self.musicPlayer.isPlaying
 
-    def __init__(self, process_service, music_player, settings, forced_initial_status = None):
+    def __init__(self,
+                 process_service,
+                 music_player,
+                 settings,
+                 forced_initial_status=None,
+                 forced_es_process=None,
+                 forced_emulators=None):
+
         self.processService = process_service
         self.musicPlayer = music_player
 
@@ -85,9 +92,10 @@ class Application:
         self.restart = settings.getboolean("default", "restart")
         self.startsong = settings.get("default", "startsong")
 
-        self.songQueue = self.get_random_queue()
+        self.song_queue = self.get_random_queue()
 
-        self.emulatornames = ["retroarch", "ags", "uae4all2", "uae4arm", "capricerpi", "linapple", "hatari", "stella",
+        self.emulationstation_procname = forced_es_process or "emulationstatio"
+        self.emulatornames = forced_emulators or ["retroarch", "ags", "uae4all2", "uae4arm", "capricerpi", "linapple", "hatari", "stella",
                               "atari800", "xroar", "vice", "daphne", "reicast", "pifba", "osmose", "gpsp", "jzintv",
                               "basiliskll", "mame", "advmame", "dgen", "openmsx", "mupen64plus", "gngeo", "dosbox",
                               "ppsspp", "simcoupe", "scummvm", "snes9x", "pisnes", "frotz", "fbzx", "fuse", "gemrb",
@@ -113,10 +121,7 @@ class Application:
                 (None, self.delay, State.playingMusic)]
         }
 
-        if forced_initial_status is None:
-            self.currentState = self.get_initial_state()
-        else:
-            self.currentState = forced_initial_status
+        self.currentState = forced_initial_status or self.get_initial_state()
 
     def get_initial_state(self):
         if self.musicPlayer.isPlaying:
@@ -130,7 +135,7 @@ class Application:
 
         state = {
             "musicIsDisabled": self.music_is_disabled(),
-            "esRunning": self.processService.process_is_running("emulationstatio"),
+            "esRunning": self.processService.process_is_running(self.emulationstation_procname),
             "emulatorIsRunning": self.processService.any_process_is_running(self.emulatornames),
             "songIsBeingPlayed": self.musicPlayer.isPlaying,
             "restart": self.restart
