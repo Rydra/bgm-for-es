@@ -20,8 +20,8 @@ class ProcessService:
     def get_process_name(self, pid):
         return open(os.path.join('/proc', pid, 'comm'), 'rb').read()
 
-    def process_is_running(self, processName):
-        return self.find_pid(processName) != -1
+    def process_is_running(self, process_name):
+        return self.find_pid(process_name) != -1
 
     def process_is_running_by_pid(self, pid):
         return os.path.exists("/proc/" + pid)

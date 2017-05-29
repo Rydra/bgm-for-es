@@ -5,67 +5,67 @@ import time
 class MusicPlayer:
     def __init__(self):
         mixer.init()
-        self.isPaused = False
-        self.maxvolume = 0.75
-        self.volume = self.maxvolume
-        self.volumefadespeed = 0.02
+        self._is_paused = False
+        self._maxvolume = 0.75
+        self._volume = self._maxvolume
+        self._volume_fadespeed = 0.02
 
     @property
-    def isPlaying(self):
+    def is_playing(self):
         return mixer.music.get_busy()
 
     @property
-    def isPaused(self):
-        return self.isPaused
-
-    def set_volume(self, volume):
-        self.volume = volume
-        mixer.music.set_volume(volume)
+    def is_paused(self):
+        return self._is_paused
 
     def play_song(self, song):
         mixer.music.load(song)
-        self.isPaused = False
-        self.set_volume(self.maxvolume)
+        self._is_paused = False
+        self._set_volume(self._maxvolume)
         mixer.music.play()
 
     def stop_music_if_playing(self):
         if mixer.music.get_busy():
-            self.isPaused = False
+            self._is_paused = False
             mixer.music.stop()
 
     def stop(self):
-        self.isPaused = False
+        self._is_paused = False
         if mixer.music.get_busy():
             mixer.music.stop()
 
-    def pause(self):
-        self.isPaused = True
-        mixer.music.pause()
-
-    def unpause(self):
-        self.isPaused = False
-        mixer.music.unpause()
-
     def fade_down_music(self, pause):
-        while self.volume > 0:
-            self.volume = self.volume - self.volumefadespeed
-            if self.volume < 0:
-                self.volume = 0
+        while self._volume > 0:
+            self._volume = self._volume - self._volume_fadespeed
+            if self._volume < 0:
+                self._volume = 0
 
-            self.set_volume(self.volume)
+            self._set_volume(self._volume)
             time.sleep(0.05)
 
         if pause:
-            self.pause()
+            self._pause()
         else:
             self.stop()
 
     def fade_up_music(self):
-        self.unpause()
-        while self.volume < self.maxvolume:
-            self.volume = self.volume + self.volumefadespeed
-            if self.volume > self.maxvolume:
-                self.volume = self.maxvolume
+        self._unpause()
+        while self._volume < self._maxvolume:
+            self._volume = self._volume + self._volume_fadespeed
+            if self._volume > self._maxvolume:
+                self._volume = self._maxvolume
 
-            self.set_volume(self.volume)
+            self._set_volume(self._volume)
             time.sleep(0.05)
+
+    def _pause(self):
+        self._is_paused = True
+        mixer.music.pause()
+
+    def _unpause(self):
+        self._is_paused = False
+        mixer.music.unpause()
+
+    def _set_volume(self, volume):
+        self._volume = volume
+        mixer.music.set_volume(volume)

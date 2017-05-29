@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from mock import MagicMock
 
-from bgm.Application import Application, State
+from bgm.MusicStateMachine import MusicStateMachine, MusicState
 
 
 class BgmShould(TestCase):
@@ -140,12 +140,12 @@ class BgmShould(TestCase):
             self.restart = True
 
             self.musicPlayer = MagicMock()
-            self.musicPlayer.isPlaying = False
-            self.musicPlayer.isPaused = False
+            self.musicPlayer.is_playing = False
+            self.musicPlayer.is_paused = False
             os.path.exists = MagicMock(return_value=False)
 
         def aSongIsBeingPlayed(self):
-            self.musicPlayer.isPlaying = True
+            self.musicPlayer.is_playing = True
             return self
 
         def theFollowingProcessesAreRunning(self, *processes):
@@ -161,7 +161,7 @@ class BgmShould(TestCase):
             return self
 
         def aSongIsPaused(self):
-            self.musicPlayer.isPaused = True
+            self.musicPlayer.is_paused = True
             return self
 
         def theFollowingSongsArePresent(self, songs):
@@ -173,7 +173,7 @@ class BgmShould(TestCase):
             return self
 
         def musicWasBeingPlayed(self):
-            self.forced_state = State.playingMusic
+            self.forced_state = MusicState.playingMusic
             return self
 
         def build(self):
@@ -188,7 +188,7 @@ class BgmShould(TestCase):
             self.config.getint.side_effect = lambda x, y: default_config[y]
             self.config.get.side_effect = lambda x, y: default_config[y]
 
-            return Application(self.processService, self.musicPlayer, self.config, self.forced_state)
+            return MusicStateMachine(self.processService, self.musicPlayer, self.config, self.forced_state)
 
         def assertASongFromTheDirectoryIsBeingPlayed(self, test):
             args, kwargs = self.musicPlayer.play_song.call_args

@@ -4,7 +4,7 @@ from ConfigParser import SafeConfigParser
 
 from bgm.MusicPlayer import MusicPlayer
 from bgm.ProcessService import ProcessService
-from bgm.Application import Application
+from bgm.MusicStateMachine import MusicStateMachine
 
 import argparse
 
@@ -21,7 +21,7 @@ def main():
     config.read(['/etc/bgmconfig.ini',
                  os.path.expanduser('~/.bgmconfig.ini'),
                  os.path.expanduser('/home/pi/.bgmconfig.ini')])
-    Application(ProcessService(), MusicPlayer(), config, forced_es_process=parsed_arguments.es, forced_emulators=parsed_arguments.names).run()
+    MusicStateMachine(ProcessService(), MusicPlayer(), config, forced_es_process=parsed_arguments.es, forced_emulators=parsed_arguments.names).run()
 
 if __name__ == "__main__":
     main()
