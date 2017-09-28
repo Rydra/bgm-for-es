@@ -6,7 +6,7 @@ A python script to run background music in EmulationStation for Retropie, inspir
 Enter the RetroPie console (you can reach it by pressing the F4 key when EmulationStation is running) and run the following commands:
 
 ```bash
-sudo echo "deb [trusted=yes] https://repo.fury.io/rydra/ /" > /etc/apt/sources.list.d/es-bgm.list
+sudo sh -c 'echo "deb [trusted=yes] https://repo.fury.io/rydra/ /" > /etc/apt/sources.list.d/es-bgm.list'
 sudo apt update
 sudo apt install python-pygame python-es-bgm
 ```
