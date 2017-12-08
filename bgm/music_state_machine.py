@@ -1,17 +1,14 @@
 import random
 import os
-from Queue import LifoQueue
 import time
+from enum import Enum, auto
+from queue import LifoQueue
 
 
-class MusicState:
-    def __init__(self, name):
-        self.name = name
-
-
-MusicState.paused = MusicState("Paused")
-MusicState.stopped = MusicState("Stopped")
-MusicState.playingMusic = MusicState("PlayingMusic")
+class MusicState(Enum):
+    PAUSED = auto()
+    STOPPED = auto()
+    PLAYING_MUSIC = auto()
 
 
 class MusicStateMachine:
@@ -41,7 +38,7 @@ class MusicStateMachine:
         self._restart = settings.getboolean("default", "restart")
         self._startsong = settings.get("default", "startsong")
 
-        self._song_queue = self._get_random_queue()
+        self._song_queue = self._generate_random_music_queue()
 
         self._emulationstation_procname = forced_es_process or "emulationstatio"
         self._emulator_names = forced_emulators or ["retroarch", "ags", "uae4all2", "uae4arm", "capricerpi", "linapple", "hatari", "stella",
@@ -53,21 +50,21 @@ class MusicStateMachine:
                                                     "xrick", "sdlpop", "uqm", "stratagus", "wolf4sdl", "solarus"]
 
         self._transitionTable = {
-            MusicState.paused: [
-                (self.has_to_stop_music, self.stop_music, MusicState.stopped),
-                (self.emulator_is_not_running, self.fade_up, MusicState.playingMusic),
-                (None, self.delay, MusicState.paused)],
+            MusicState.PAUSED: [
+                (self.has_to_stop_music, self.stop_music, MusicState.STOPPED),
+                (self.emulator_is_not_running, self.fade_up, MusicState.PLAYING_MUSIC),
+                (None, self.delay, MusicState.PAUSED)],
 
-            MusicState.stopped: [
-                (self.has_to_play_music, self.play_music, MusicState.playingMusic),
-                (None, self.delay, MusicState.stopped)],
+            MusicState.STOPPED: [
+                (self.has_to_play_music, self.play_music, MusicState.PLAYING_MUSIC),
+                (None, self.delay, MusicState.STOPPED)],
 
-            MusicState.playingMusic: [
-                (self.has_to_stop_music, self.stop_music, MusicState.stopped),
-                (self.should_fade_down_and_pause, self.fade_down, MusicState.paused),
-                (self.should_fade_down_and_stop, self.fade_down, MusicState.stopped),
-                (self._music_is_not_playing, self.play_music, MusicState.playingMusic),
-                (None, self.delay, MusicState.playingMusic)]
+            MusicState.PLAYING_MUSIC: [
+                (self.has_to_stop_music, self.stop_music, MusicState.STOPPED),
+                (self.should_fade_down_and_pause, self.fade_down, MusicState.PAUSED),
+                (self.should_fade_down_and_stop, self.fade_down, MusicState.STOPPED),
+                (self._music_is_not_playing, self.play_music, MusicState.PLAYING_MUSIC),
+                (None, self.delay, MusicState.PLAYING_MUSIC)]
         }
 
         self._currentState = forced_initial_status or self._get_initial_state()
@@ -84,8 +81,6 @@ class MusicStateMachine:
                 break
 
     def run(self):
-
-        # Delay audio start per config option above
         if self._startdelay > 0:
             time.sleep(self._startdelay)
 
@@ -97,8 +92,7 @@ class MusicStateMachine:
     def _get_songs(self):
         return [song for song in os.listdir(self._musicdir) if song[-4:] == ".mp3" or song[-4:] == ".ogg"]
 
-    def _get_random_queue(self):
-
+    def _generate_random_music_queue(self):
         song_queue = LifoQueue()
         song_list = self._get_songs()
 
@@ -129,7 +123,7 @@ class MusicStateMachine:
 
     def play_music(self):
         if self._song_queue.empty():
-            self._song_queue = self._get_random_queue()
+            self._song_queue = self._generate_random_music_queue()
 
         song = os.path.join(self._musicdir, self._song_queue.get())
         self._music_player.play_song(song)
@@ -156,11 +150,11 @@ class MusicStateMachine:
 
     def _get_initial_state(self):
         if self._music_player.is_playing:
-            return MusicState.playingMusic
+            return MusicState.PLAYING_MUSIC
         elif self._music_player.is_paused:
-            return MusicState.paused
+            return MusicState.PAUSED
         else:
-            return MusicState.stopped
+            return MusicState.STOPPED
 
     def _get_status(self):
 

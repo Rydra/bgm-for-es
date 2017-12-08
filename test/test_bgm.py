@@ -1,12 +1,10 @@
 import os
-from unittest import TestCase
+from unittest.mock import MagicMock
 
-from mock import MagicMock
-
-from bgm.MusicStateMachine import MusicStateMachine, MusicState
+from bgm.music_state_machine import MusicStateMachine, MusicState
 
 
-class BgmShould(TestCase):
+class TestBgm:
     def test_play_music_if_ES_is_running(self):
         scenario_maker = self._ScenarioMaker()
         app = scenario_maker \
@@ -16,7 +14,7 @@ class BgmShould(TestCase):
 
         app.execute_state()
 
-        scenario_maker.assertASongFromTheDirectoryIsBeingPlayed(self)
+        scenario_maker.assertASongFromTheDirectoryIsBeingPlayed()
 
     def test_fade_down_music_by_pausing_if_Emulator_is_running_and_a_song_is_being_played(self):
         scenario_maker = self._ScenarioMaker()
@@ -67,7 +65,7 @@ class BgmShould(TestCase):
 
         app.execute_state()
 
-        scenario_maker.assertASongFromTheDirectoryIsBeingPlayed(self)
+        scenario_maker.assertASongFromTheDirectoryIsBeingPlayed()
 
     def test_stop_music_if_music_is_disabled(self):
         scenario_maker = self._ScenarioMaker()
@@ -173,7 +171,7 @@ class BgmShould(TestCase):
             return self
 
         def musicWasBeingPlayed(self):
-            self.forced_state = MusicState.playingMusic
+            self.forced_state = MusicState.PLAYING_MUSIC
             return self
 
         def build(self):
@@ -190,11 +188,11 @@ class BgmShould(TestCase):
 
             return MusicStateMachine(self.processService, self.musicPlayer, self.config, self.forced_state)
 
-        def assertASongFromTheDirectoryIsBeingPlayed(self, test):
+        def assertASongFromTheDirectoryIsBeingPlayed(self):
             args, kwargs = self.musicPlayer.play_song.call_args
-            test.assertTrue(args[0] in [os.path.join('/home/pi/RetroPie/music', 'file1.ogg'),
+            assert args[0] in [os.path.join('/home/pi/RetroPie/music', 'file1.ogg'),
                                         os.path.join('/home/pi/RetroPie/music', 'file2.ogg'),
-                                        os.path.join('/home/pi/RetroPie/music', 'file3.ogg')])
+                                        os.path.join('/home/pi/RetroPie/music', 'file3.ogg')]
             self.musicPlayer.play_song.assert_called_once()
 
         def assertMusicHasFadeDown(self, pause):

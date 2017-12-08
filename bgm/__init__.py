@@ -1,10 +1,9 @@
 import os
-import sys
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
 
-from bgm.MusicPlayer import MusicPlayer
-from bgm.ProcessService import ProcessService
-from bgm.MusicStateMachine import MusicStateMachine
+from bgm.music_player import MusicPlayer
+from bgm.process_service import ProcessService
+from bgm.music_state_machine import MusicStateMachine
 
 import argparse
 
@@ -17,7 +16,7 @@ def main():
 
     parsed_arguments = parser.parse_args()
 
-    config = SafeConfigParser()
+    config = ConfigParser()
     config.read(['/etc/bgmconfig.ini',
                  os.path.expanduser('~/.bgmconfig.ini'),
                  os.path.expanduser('/home/pi/.bgmconfig.ini')])
