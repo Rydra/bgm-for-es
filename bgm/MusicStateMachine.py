@@ -45,7 +45,7 @@ class MusicStateMachine:
 
         self._emulationstation_procname = forced_es_process or "emulationstatio"
         self._emulator_names = forced_emulators or ["retroarch", "ags", "uae4all2", "uae4arm", "capricerpi", "linapple", "hatari", "stella",
-                              "atari800", "xroar", "vice", "daphne", "reicast", "pifba", "osmose", "gpsp", "jzintv",
+                              "atari800", "xroar", "vice", "daphne", "daphne.bin", "reicast", "pifba", "osmose", "gpsp", "jzintv",
                               "basiliskll", "mame", "advmame", "dgen", "openmsx", "mupen64plus", "gngeo", "dosbox",
                               "ppsspp", "simcoupe", "scummvm", "snes9x", "pisnes", "frotz", "fbzx", "fuse", "gemrb",
                               "cgenesis", "zdoom", "eduke32", "lincity", "love", "kodi", "alephone", "micropolis",
