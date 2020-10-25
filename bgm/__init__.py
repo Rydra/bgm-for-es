@@ -1,10 +1,9 @@
 import os
-import sys
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
-from bgm.MusicPlayer import MusicPlayer
-from bgm.ProcessService import ProcessService
-from bgm.MusicStateMachine import MusicStateMachine
+from bgm.music_player import MusicPlayer
+from bgm.process_service import ProcessService
+from bgm.music_state_machine import MusicStateMachine
 
 import argparse
 
@@ -21,7 +20,9 @@ def main():
     config.read(['/etc/bgmconfig.ini',
                  os.path.expanduser('~/.bgmconfig.ini'),
                  os.path.expanduser('/home/pi/.bgmconfig.ini')])
-    MusicStateMachine(ProcessService(), MusicPlayer(), config, forced_es_process=parsed_arguments.es, forced_emulators=parsed_arguments.names).run()
+    MusicStateMachine(ProcessService(), MusicPlayer(), config,
+                      forced_es_process=parsed_arguments.es,
+                      forced_emulators=parsed_arguments.names).run()
 
 if __name__ == "__main__":
     main()

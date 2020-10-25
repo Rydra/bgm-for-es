@@ -1,7 +1,7 @@
 import random
 import os
-from Queue import LifoQueue
 import time
+from queue import LifoQueue
 
 
 class MusicState:
@@ -73,11 +73,9 @@ class MusicStateMachine:
         self._currentState = forced_initial_status or self._get_initial_state()
 
     def execute_state(self):
-
         status = self._get_status()
         transitions = self._transitionTable[self._currentState]
         for condition, action, nextState in transitions:
-
             if condition is None or condition(status):
                 action()
                 self._currentState = nextState

@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from mock import MagicMock
 
-from bgm.MusicStateMachine import MusicStateMachine, MusicState
+from bgm.music_state_machine import MusicStateMachine, MusicState
 
 
 class BgmShould(TestCase):
