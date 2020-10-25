@@ -35,6 +35,10 @@ class MusicPlayer:
             mixer.music.stop()
 
     def fade_down_music(self, pause):
+        """
+        Fades down the current song until stopped. If pause is True,
+        it will resume the current song when starting again
+        """
         while self._volume > 0:
             self._volume = self._volume - self._volume_fadespeed
             if self._volume < 0:
