@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "emulationstation-bgm"
-version = "0.0.1"
+version = "1.0.0"
 description = "Allows you to add background music to EmulationStation"
 authors = ["David <davigetto@gmail.com>"]
 license = "LGPL-3.0-or-later"
@@ -20,7 +20,7 @@ pytest-mock = "^3.6.1"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.0.1"
+version = "1.0.0"
 tag_format = "$version"
 version_files = [
     "bgm/__version__.py",
