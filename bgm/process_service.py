@@ -1,12 +1,10 @@
 import os
+from typing import List, Union
 
 
 class ProcessService:
-    def __init__(self):
-        pass
-
-    def find_pid(self, process_name):
-        pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
+    def find_pid(self, process_name: str) -> Union[str, int]:
+        pids = [pid for pid in os.listdir("/proc") if pid.isdigit()]
         for pid in pids:
             try:
                 procname = self.get_process_name(pid)
@@ -17,17 +15,17 @@ class ProcessService:
 
         return -1
 
-    def get_process_name(self, pid):
-        return open(os.path.join('/proc', pid, 'comm'), 'rb').read()
+    def get_process_name(self, pid: str) -> bytes:
+        return open(os.path.join("/proc", pid, "comm"), "rb").read()
 
-    def process_is_running(self, process_name):
+    def process_is_running(self, process_name: str) -> bool:
         return self.find_pid(process_name) != -1
 
-    def process_is_running_by_pid(self, pid):
+    def process_is_running_by_pid(self, pid: str) -> bool:
         return os.path.exists("/proc/" + pid)
 
-    def any_process_is_running(self, process_names):
-        pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
+    def any_process_is_running(self, process_names: List[str]) -> bool:
+        pids = [pid for pid in os.listdir("/proc") if pid.isdigit()]
         for pid in pids:
             try:
                 procname = self.get_process_name(pid)

@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "emulationstation-bgm"
+version = "0.0.1"
+description = "Allows you to add background music to EmulationStation"
+authors = ["David <davigetto@gmail.com>"]
+license = "LGPL-3.0-or-later"
+packages = [
+    { include = "bgm" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pygame = "^2.0.1"
+python-decouple = "^3.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
+pytest-mock = "^3.6.1"
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.1"
+tag_format = "$version"
+version_files = [
+    "bgm/__version__.py",
+    "pyproject.toml:version"
+]
+update_changelog_on_bump = true
+annotated_tag = true
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
