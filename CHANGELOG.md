@@ -1,3 +1,9 @@
+## 1.1.0 (2022-01-27)
+
+### Feat
+
+- add installation script
+
 ## 1.0.2 (2022-01-27)
 
 ### Refactor
