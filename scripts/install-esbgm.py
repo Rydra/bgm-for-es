@@ -10,10 +10,14 @@ from pathlib import Path
 
 autostart_entry = [
     "[Desktop Entry]",
-    "Name=EsBGM",
-    "Comment=Plays background music when emulationstation is running",
-    "Exec=esbgm",
     "Type=Application",
+    "Exec=esbgm",
+    "X-GNOME-Autostart-enabled=true",
+    "NoDisplay=false",
+    "Hidden=false",
+    "Name[en_US]=ESBGM",
+    "Comment[en_US]=Run background music when emulationstation is up",
+    "X-GNOME-Autostart-Delay=0",
 ]
 
 
@@ -37,7 +41,7 @@ def install_from_pip():
     """
     Installs es-bgm from pip
     """
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "es-bgm"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "es-bgm"])
 
 
 def uninstall_from_pip():
@@ -51,14 +55,17 @@ def add_autostart_script():
     """
     Places the autostart script to the appropriate folder
     """
+    print("Adding the autostart script...", end="")
     autostart_folder = Path(os.path.expanduser("~/.config/autostart"))
     if not autostart_folder.exists():
         autostart_folder.mkdir(parents=True, exist_ok=True)
 
-    desktop_entry = Path(autostart_folder, "esbgm.desktop")
+    desktop_entry = Path(autostart_folder, "ESBGM.desktop")
     if not desktop_entry.exists():
         with desktop_entry.open("w") as fs:
-            fs.writelines(autostart_entry)
+            for entry in autostart_entry:
+                fs.write(entry + "\n")
+    print("OK")
 
 
 def remove_autostart_script():
@@ -102,8 +109,6 @@ class Installer:
         self._accept_all = accept_all
 
     def run(self):
-        self.customize_install()
-
         try:
             self.install()
         except subprocess.CalledProcessError as e:
