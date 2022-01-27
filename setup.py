@@ -1,13 +1,4 @@
-import unittest
-
 from setuptools import setup
-
-
-def get_test_suite():
-    test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover("test", pattern="test_*.py")
-    return test_suite
-
 
 setup(
     name="es-bgm",
@@ -19,9 +10,8 @@ setup(
     author="David Jimenez",
     author_email="davigetto@gmail.com",
     description="Allows you to add background music to EmulationStation",
-    requires=["mock", "pytest"],
-    entry_points={"console_scripts": ["startbgm = bgm:main"]},
-    test_suite="setup.get_test_suite",
+    requires=["pytest"],
+    entry_points={"console_scripts": ["es-bgm = bgm:main"]},
     data_files=[
         ("/lib/systemd/system", ["service/bgm.service"]),
         ("/etc", ["cfg/bgmconfig.ini"]),

@@ -23,7 +23,7 @@ class MusicPlayer:
     def is_paused(self) -> bool:
         return self._is_paused
 
-    def play_song(self, song) -> None:
+    def play_song(self, song: str) -> None:
         mixer.music.load(song)
         self._is_paused = False
         self._set_volume(self._maxvolume)
@@ -39,7 +39,7 @@ class MusicPlayer:
         if mixer.music.get_busy():
             mixer.music.stop()
 
-    def fade_down_music(self, pause) -> None:
+    def fade_down_music(self, pause: bool) -> None:
         """
         Fades down the current song until stopped. If pause is True,
         it will resume the current song when starting again
