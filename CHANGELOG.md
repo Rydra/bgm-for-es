@@ -1,3 +1,9 @@
+## 1.0.2 (2022-01-27)
+
+### Refactor
+
+- refactor the script with new libraries to lift some of the functionality
+
 ## 1.0.1 (2021-08-03)
 
 ### Refactor
