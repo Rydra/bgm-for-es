@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 pygame = "^2.0.1"
 python-decouple = "^3.4"
 PyYAML = "^6.0"
