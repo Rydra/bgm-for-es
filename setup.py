@@ -6,7 +6,6 @@ setup(
     packages=["bgm"],
     url="",
     license="GPL",
-    package_data={"bgm": ["bgmconfig.ini"]},
     author="David Jimenez",
     author_email="davigetto@gmail.com",
     description="Allows you to add background music to EmulationStation",
@@ -14,7 +13,6 @@ setup(
     entry_points={"console_scripts": ["es-bgm = bgm:main"]},
     data_files=[
         ("/lib/systemd/system", ["service/bgm.service"]),
-        ("/etc", ["cfg/bgmconfig.ini"]),
         ("/home/pi/RetroPie/roms/music", ["extra/PLACE_YOUR_MUSIC_HERE"]),
     ],
 )

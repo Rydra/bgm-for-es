@@ -69,7 +69,7 @@ repos:
         args:
           - --ini
           - setup.cfg
-        exclude: tests/
+        exclude: (tests/|scripts/)
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.0
     hooks:

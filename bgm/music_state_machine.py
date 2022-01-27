@@ -132,7 +132,7 @@ class MusicStateMachine:
             song_list.remove(self._startsong)
 
         while len(song_list) > 0:
-            song_to_add = secrets.randbelow(len(song_list) - 1)
+            song_to_add = secrets.randbelow(len(song_list))
             song_queue.put(song_list[song_to_add])
             song_list.remove(song_list[song_to_add])
 
@@ -144,6 +144,7 @@ class MusicStateMachine:
         time.sleep(2)
 
     def stop_music(self, status: _EnvironmentState) -> None:
+        print("Stopping music")
         self._music_player.stop()
 
     def fade_up(self, status: _EnvironmentState) -> None:
@@ -157,6 +158,7 @@ class MusicStateMachine:
             self._song_queue = self._generate_random_music_queue()
 
         song = os.path.join(self._musicdir, self._song_queue.get())
+        print(f"Playing {song}")
         self._music_player.play_song(song)
 
     # CONDITIONS

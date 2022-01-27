@@ -30,6 +30,8 @@ doublex = "^1.9.3"
 bunch = "^1.0.1"
 decorator = "^5.1.1"
 
+[tool.poetry.scripts]
+esbgm = "bgm:main"
 
 [tool.poetry.extras]
 lint = ["pylint"]
@@ -49,5 +51,5 @@ annotated_tag = true
 line-length = 120
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

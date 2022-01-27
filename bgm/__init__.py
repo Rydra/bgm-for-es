@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import confuse
 
@@ -22,6 +23,13 @@ def main() -> None:
     config = confuse.Configuration("esbgm", __name__)
     config.set_args(args, dots=True)
     print("configuration directory is", config.config_dir())
+    userconfig_path = os.path.join(config.config_dir(), confuse.CONFIG_FILENAME)
+    if not os.path.exists(userconfig_path):
+        print(f"config file not found, dumping defaults at {userconfig_path}")
+        yaml = config.dump()
+        with open(userconfig_path, "w") as fs:
+            fs.write(yaml)
+
     MusicStateMachine(ProcessService(), MusicPlayer(), config).run()
 
 
