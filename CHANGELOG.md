@@ -1,3 +1,16 @@
+## 1.2.0 (2022-01-28)
+
+### Feat
+
+- remove unused workflow
+- add tox workflow
+
+### Fix
+
+- downgrade to python 3.7
+- downgrade to python 3.7
+- change the script to use pip3 instead of pip
+
 ## 1.1.0 (2022-01-27)
 
 ### Feat
