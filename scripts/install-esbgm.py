@@ -35,6 +35,7 @@ def is_decorated():
 
 
 DEFAULT_MUSIC_FOLDER = Path(os.path.expanduser("~/RetroPie/roms/music"))
+AUTOSTART_RETROPIE_PATH = Path("/opt/retropie/configs/all/autostart.sh")
 
 
 def install_from_pip():
@@ -56,15 +57,27 @@ def add_autostart_script():
     Places the autostart script to the appropriate folder
     """
     print("Adding the autostart script...", end="")
-    autostart_folder = Path(os.path.expanduser("~/.config/autostart"))
-    if not autostart_folder.exists():
-        autostart_folder.mkdir(parents=True, exist_ok=True)
+    if AUTOSTART_RETROPIE_PATH.exists():
+        # Prepend the running of esbgm to the autostart script
+        # We are in a retropie. Update the file if possible
+        with AUTOSTART_RETROPIE_PATH.open("r+") as fs:
+            line_found = any("esbgm" in line for line in fs)
+            fs.seek(0)
+            if not line_found:
+                s = fs.read()
+                fs.seek(0)
+                fs.write("esbgm &\n" + s)
+    else:
+        autostart_folder = Path(os.path.expanduser("~/.config/autostart"))
+        if not autostart_folder.exists():
+            autostart_folder.mkdir(parents=True, exist_ok=True)
 
-    desktop_entry = Path(autostart_folder, "ESBGM.desktop")
-    if not desktop_entry.exists():
-        with desktop_entry.open("w") as fs:
-            for entry in autostart_entry:
-                fs.write(entry + "\n")
+        desktop_entry = Path(autostart_folder, "ESBGM.desktop")
+        if not desktop_entry.exists():
+            with desktop_entry.open("w") as fs:
+                for entry in autostart_entry:
+                    fs.write(entry + "\n")
+
     print("OK")
 
 
@@ -73,8 +86,16 @@ def remove_autostart_script():
     Removes the autostart script
     """
     print("Removing the autostart entry...", end="")
-    desktop_entry = Path(os.path.expanduser("~/.config/autostart/esbgm.desktop"))
-    desktop_entry.unlink(missing_ok=True)
+    if AUTOSTART_RETROPIE_PATH.exists():
+        with AUTOSTART_RETROPIE_PATH.open("r") as fs:
+            lines = fs.readlines()
+        with AUTOSTART_RETROPIE_PATH.open("w") as fs:
+            for line in lines:
+                if "esbgm" not in line:
+                    fs.write(line)
+    else:
+        desktop_entry = Path(os.path.expanduser("~/.config/autostart/esbgm.desktop"))
+        desktop_entry.unlink(missing_ok=True)
     print("OK")
 
 
