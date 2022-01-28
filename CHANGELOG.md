@@ -1,3 +1,10 @@
+## 1.2.1 (2022-01-28)
+
+### Fix
+
+- update the install script
+- update the script to appropriately add the autostart to the retropie
+
 ## 1.2.0 (2022-01-28)
 
 ### Feat
