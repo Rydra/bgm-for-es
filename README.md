@@ -5,7 +5,7 @@ inspired by the script posted [here](https://retropie.org.uk/forum/topic/347/bac
 but focusing on a script with well-written code, trying to follow good design practices
 and putting special attention on testability
 
-## How to install
+## Installing BGM for EmulationStation
 
 _Prerrequisites_: python >=3.7 is required to install this application. You can check your version
 by executing this command on your machine:
@@ -22,11 +22,6 @@ python3 --version
 
 Enter the RetroPie console (you can reach it by pressing the F4 key when EmulationStation
 is running) and run the following commands:
-
-## Installing BGM for EmulationStation
-
-Enter the RetroPie console (you can reach it by pressing the F4 key when
-EmulationStation is running) and run the following command:
 
 ```
 curl -sSL https://raw.githubusercontent.com/Rydra/bgm-for-es/main/scripts/install-esbgm.py | python3 -
