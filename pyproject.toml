@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 pygame = "^2.0.1"
 python-decouple = "^3.4"
 PyYAML = "^6.0"
@@ -29,6 +29,7 @@ pytest-mock = "^3.6.1"
 doublex = "^1.9.3"
 bunch = "^1.0.1"
 decorator = "^5.1.1"
+tox = "^3.24.5"
 
 [tool.poetry.scripts]
 esbgm = "bgm:main"
@@ -53,3 +54,19 @@ line-length = 120
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py37, py38, py39, py310, mypy
+isolated_build = True
+
+[gh-actions]
+python =
+    3.7: py37
+    3.8: py38
+    3.9: py39
+    3.10: py310, mypy
+
+[testenv]
+"""
