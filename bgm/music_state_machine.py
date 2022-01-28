@@ -176,7 +176,7 @@ class MusicStateMachine:
         return status.stopper_process_is_running and not self._restart
 
     def has_to_play_music(self, status: _EnvironmentState) -> bool:
-        return status.main_process_running and not status.stopper_process_is_running
+        return status.main_process_running and not status.stopper_process_is_running and not status.music_is_disabled
 
     def _music_is_not_playing(self, status: _EnvironmentState) -> bool:
         return not self._music_player.is_playing
@@ -201,7 +201,7 @@ class MusicStateMachine:
         return status
 
     def _music_is_disabled(self) -> bool:
-        return os.path.exists("/home/pi/PyScripts/DisableMusic")
+        return os.path.exists(os.path.expanduser("~/.config/esbgm/disable.flag"))
 
     def _wait_splash_screen(self) -> None:
         # Look for OMXplayer - if it's running, someone's got a splash screen going!

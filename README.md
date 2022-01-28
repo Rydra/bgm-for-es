@@ -7,6 +7,19 @@ and putting special attention on testability
 
 ## How to install
 
+_Prerrequisites_: python >=3.7 is required to install this application. You can check your version
+by executing this command on your machine:
+
+```
+python --version
+```
+
+or
+
+```
+python3 --version
+```
+
 Enter the RetroPie console (you can reach it by pressing the F4 key when EmulationStation
 is running) and run the following commands:
 
@@ -31,6 +44,15 @@ sudo reboot
 curl -sSL https://raw.githubusercontent.com/Rydra/bgm-for-es/main/scripts/install-esbgm.py > install-esbgm.py
 python3 install-esbgm.py --uninstall
 ```
+
+## Enabling/Disabling the background music
+
+Under the config section of EmulationStation two new commands have been added:
+
+- Enable background music
+- Disable background music
+
+Select one or the other to enable or disable the background music
 
 ## How it works
 

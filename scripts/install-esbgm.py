@@ -66,7 +66,7 @@ def add_autostart_script():
             if not line_found:
                 s = fs.read()
                 fs.seek(0)
-                fs.write("esbgm &\n" + s)
+                fs.write("/home/pi/.local/bin/esbgm > /dev/null 2>&1 &\n" + s)
     else:
         autostart_folder = Path(os.path.expanduser("~/.config/autostart"))
         if not autostart_folder.exists():
@@ -111,6 +111,28 @@ def create_default_music_folder():
         music_folder_file.write_text("Place your music files in this directory (.ogg and .mp3 supported)")
 
     print("OK")
+
+
+DEFAULT_MENU_OPTIONS_FOLDER = Path(os.path.expanduser("~/RetroPie/retropiemenu/"))
+DISABLE_BACKGROUND_MUSIC = Path(DEFAULT_MENU_OPTIONS_FOLDER, "Disable background music.sh")
+ENABLE_BACKGROUND_MUSIC = Path(DEFAULT_MENU_OPTIONS_FOLDER, "Enable background music.sh")
+
+
+def add_menu_options():
+    if DEFAULT_MENU_OPTIONS_FOLDER.exists():
+        with DISABLE_BACKGROUND_MUSIC.open("w") as fs:
+            fs.write("#/bin/bash\n")
+            fs.write("mkdir -p ~/.config/esbgm\n")
+            fs.write("touch ~/.config/esbgm/disable.flag\n")
+
+        with ENABLE_BACKGROUND_MUSIC.open("w") as fs:
+            fs.write("#/bin/bash\n")
+            fs.write("rm -f ~/.config/esbgm/disable.flag\n")
+
+
+def remove_menu_options():
+    DISABLE_BACKGROUND_MUSIC.unlink(missing_ok=True)
+    ENABLE_BACKGROUND_MUSIC.unlink(missing_ok=True)
 
 
 def ensure_python_version():
@@ -181,6 +203,7 @@ class Installer:
         print("Installing esbgm...")
 
         install_from_pip()
+        add_menu_options()
         add_autostart_script()
         create_default_music_folder()
 
