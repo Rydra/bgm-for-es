@@ -1,3 +1,9 @@
+## 1.2.2rc0 (2022-01-30)
+
+### Refactor
+
+- separate the environment into a separate class
+
 ## 1.2.1 (2022-01-28)
 
 ### Fix
