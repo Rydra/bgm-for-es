@@ -8,7 +8,7 @@ from doublex import ANY_ARG, Spy, assert_that, called
 from hamcrest import *
 from pytest_mock import MockerFixture
 
-from bgm import MusicPlayer, ProcessService
+from bgm import Environment, MusicPlayer, ProcessService
 from bgm.music_state_machine import MusicState, MusicStateMachine
 
 
@@ -43,6 +43,15 @@ def default_config(shared_datadir):
     return config
 
 
+def build_env(config, process_service, music_player):
+    restart = config["restart"].get()
+    stopper_processes = config["emulator_names"].get()
+    mainprocess = config["mainprocess"].get()
+    environment = Environment(process_service, music_player, restart, mainprocess, stopper_processes)
+
+    return environment
+
+
 class TestBgm:
     def test_play_music_if_ES_is_running(
         self, testcontext, process_service_spy, music_player_spy, default_config, mocker
@@ -53,7 +62,10 @@ class TestBgm:
         the_following_processes_are_running(["emulationstatio"], testcontext)
         the_following_songs_are_present(mocker, ["file1.ogg", "file2.ogg", "file3.ogg"], testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
 
         app.execute_state()
         assert_that(app.state, is_(MusicState.PLAYING_MUSIC))
@@ -83,7 +95,10 @@ class TestBgm:
 
         default_config["restart"] = False
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
         assert_that(app.state, is_(MusicState.PAUSED))
         assert_that(music_player_spy.fade_down_music, called().with_args(True))
@@ -99,7 +114,10 @@ class TestBgm:
         an_emulator_is_running("snes9x", testcontext)
         a_song_is_being_played(testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
 
         assert_that(app.state, is_(MusicState.STOPPED))
@@ -115,7 +133,10 @@ class TestBgm:
         the_following_songs_are_present(mocker, ["file1.ogg", "file2.ogg", "file3.ogg"], testcontext)
         a_song_is_paused(testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
 
         assert_that(app.state, is_(MusicState.PLAYING_MUSIC))
@@ -131,7 +152,10 @@ class TestBgm:
         the_following_songs_are_present(mocker, ["file1.ogg", "file2.ogg", "file3.ogg"], testcontext)
         music_was_being_played(testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
 
         assert_that(app.state, is_(MusicState.PLAYING_MUSIC))
@@ -159,7 +183,10 @@ class TestBgm:
         the_music_is_disabled(mocker, testcontext)
         a_song_is_being_played(testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
         assert_that(app.state, is_(MusicState.STOPPED))
         assert_that(music_player_spy.stop, called())
@@ -173,7 +200,10 @@ class TestBgm:
         the_following_songs_are_present(mocker, ["file1.ogg", "file2.ogg", "file3.ogg"], testcontext)
         an_emulator_is_running("snes9x", testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
         assert_that(app.state, is_(MusicState.STOPPED))
         assert_that(music_player_spy.stop, not_(called()))
@@ -190,7 +220,10 @@ class TestBgm:
         the_following_songs_are_present(mocker, ["file1.ogg", "file2.ogg", "file3.ogg"], testcontext)
         a_song_is_being_played(testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
         assert_that(app.state, is_(MusicState.STOPPED))
         assert_that(music_player_spy.stop, called())
@@ -205,7 +238,8 @@ class TestBgm:
         the_following_songs_are_present(mocker, ["file1.ogg", "file2.ogg", "file3.ogg"], testcontext)
         a_song_is_being_played(testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, environment)
         app.execute_state()
         assert_that(app.state, is_(MusicState.PLAYING_MUSIC))
         assert_that(music_player_spy.stop, not_(called()))
@@ -222,7 +256,10 @@ class TestBgm:
         the_following_songs_are_present(mocker, ["file1.ogg", "file2.ogg", "file3.ogg"], testcontext)
         an_emulator_is_running("snes9x", testcontext)
 
-        app = MusicStateMachine(process_service_spy, music_player_spy, default_config, testcontext.forced_state)
+        environment = build_env(default_config, process_service_spy, music_player_spy)
+        app = MusicStateMachine(
+            process_service_spy, music_player_spy, default_config, environment, testcontext.forced_state
+        )
         app.execute_state()
         assert_that(app.state, is_(MusicState.STOPPED))
         assert_that(music_player_spy.stop, not_(called()))

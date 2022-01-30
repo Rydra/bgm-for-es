@@ -9,6 +9,7 @@ from typing import List, Optional
 from confuse import Configuration
 from transitions import Machine
 
+from bgm.environment import BaseEnvironment, EnvironmentState
 from bgm.music_player import MusicPlayer
 from bgm.process_service import ProcessService
 
@@ -20,32 +21,25 @@ class MusicState(Enum):
 
 
 class MusicStateMachine:
-    random.seed()
+    """
+    The state machine is responsible to orchestrate
+    the calls to the music player, based on the information
+    provided by the environment
+    """
 
-    class _EnvironmentState:
-        def __init__(
-            self,
-            music_is_disabled: bool,
-            es_running: bool,
-            emulator_is_running: bool,
-            song_is_being_played: bool,
-            restart: bool,
-        ) -> None:
-            self.restart = restart
-            self.song_is_being_played = song_is_being_played
-            self.stopper_process_is_running = emulator_is_running
-            self.main_process_running = es_running
-            self.music_is_disabled = music_is_disabled
+    random.seed()
 
     def __init__(
         self,
         process_service: ProcessService,
         music_player: MusicPlayer,
         config: Configuration,
+        environment: BaseEnvironment,
         forced_initial_status: Optional[MusicState] = None,
     ):
         self._process_service = process_service
         self._music_player = music_player
+        self.environment = environment
 
         self._startdelay = config["startdelay"].get()
         self._musicdir = config["musicdir"].as_filename()
@@ -53,9 +47,6 @@ class MusicStateMachine:
         self._startsong = config["startsong"].get()
 
         self._song_queue = self._generate_random_music_queue()
-
-        self._mainprocess = config["mainprocess"].get()
-        self._stopper_processes = config["emulator_names"].get()
 
         self._machine = Machine(
             model=self, states=MusicState, initial=forced_initial_status or self._get_initial_state()
@@ -68,7 +59,7 @@ class MusicStateMachine:
             MusicState.PAUSED,
             MusicState.PLAYING_MUSIC,
             before="fade_up",
-            conditions="stopper_process_is_not_running",
+            conditions="has_to_play_music",
         )
         self._machine.add_transition(
             "run_trns",
@@ -89,7 +80,7 @@ class MusicStateMachine:
             MusicState.PLAYING_MUSIC,
             MusicState.PAUSED,
             before="fade_down",
-            conditions="should_fade_down_and_pause",
+            conditions="should_pause",
         )
         self._machine.add_transition(
             "run_trns",
@@ -103,11 +94,11 @@ class MusicStateMachine:
             MusicState.PLAYING_MUSIC,
             MusicState.PLAYING_MUSIC,
             before="play_music",
-            conditions="_music_is_not_playing",
+            conditions="music_is_not_playing",
         )
 
     def execute_state(self) -> None:
-        state = self._get_state()
+        state = self.environment.get_state()
         self.run_trns(state)  # type: ignore
 
     def run(self) -> None:
@@ -139,21 +130,20 @@ class MusicStateMachine:
         return song_queue
 
     # ACTIONS
-
     def delay(self) -> None:
         time.sleep(2)
 
-    def stop_music(self, status: _EnvironmentState) -> None:
+    def stop_music(self, status: EnvironmentState) -> None:
         print("Stopping music")
         self._music_player.stop()
 
-    def fade_up(self, status: _EnvironmentState) -> None:
+    def fade_up(self, status: EnvironmentState) -> None:
         self._music_player.fade_up_music()
 
-    def fade_down(self, status: _EnvironmentState) -> None:
+    def fade_down(self, status: EnvironmentState) -> None:
         self._music_player.fade_down_music(not self._restart)
 
-    def play_music(self, status: _EnvironmentState) -> None:
+    def play_music(self, status: EnvironmentState) -> None:
         if self._song_queue.empty():
             self._song_queue = self._generate_random_music_queue()
 
@@ -162,24 +152,20 @@ class MusicStateMachine:
         self._music_player.play_song(song)
 
     # CONDITIONS
+    def has_to_stop_music(self, status: EnvironmentState) -> bool:
+        return self.environment.has_to_stop_music(status)
 
-    def has_to_stop_music(self, status: _EnvironmentState) -> bool:
-        return not status.stopper_process_is_running and (status.music_is_disabled or not status.main_process_running)
+    def has_to_play_music(self, status: EnvironmentState) -> bool:
+        return self.environment.has_to_play_music(status)
 
-    def stopper_process_is_not_running(self, status: _EnvironmentState) -> bool:
-        return not status.stopper_process_is_running
+    def should_fade_down_and_stop(self, status: EnvironmentState) -> bool:
+        return self.environment.should_fade_down_and_stop(status)
 
-    def should_fade_down_and_stop(self, status: _EnvironmentState) -> bool:
-        return status.stopper_process_is_running and self._restart
+    def should_pause(self, status: EnvironmentState) -> bool:
+        return self.environment.should_pause(status)
 
-    def should_fade_down_and_pause(self, status: _EnvironmentState) -> bool:
-        return status.stopper_process_is_running and not self._restart
-
-    def has_to_play_music(self, status: _EnvironmentState) -> bool:
-        return status.main_process_running and not status.stopper_process_is_running and not status.music_is_disabled
-
-    def _music_is_not_playing(self, status: _EnvironmentState) -> bool:
-        return not self._music_player.is_playing
+    def music_is_not_playing(self, state: EnvironmentState) -> bool:
+        return self.environment.music_is_not_playing(state)
 
     def _get_initial_state(self) -> MusicState:
         if self._music_player.is_playing:
@@ -188,20 +174,6 @@ class MusicStateMachine:
             return MusicState.PAUSED
         else:
             return MusicState.STOPPED
-
-    def _get_state(self) -> _EnvironmentState:
-        status = self._EnvironmentState(
-            emulator_is_running=self._process_service.any_process_is_running(self._stopper_processes),
-            es_running=self._process_service.process_is_running(self._mainprocess),
-            music_is_disabled=self._music_is_disabled(),
-            restart=self._restart,
-            song_is_being_played=self._music_player.is_playing,
-        )
-
-        return status
-
-    def _music_is_disabled(self) -> bool:
-        return os.path.exists(os.path.expanduser("~/.config/esbgm/disable.flag"))
 
     def _wait_splash_screen(self) -> None:
         # Look for OMXplayer - if it's running, someone's got a splash screen going!

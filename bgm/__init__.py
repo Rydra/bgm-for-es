@@ -1,8 +1,11 @@
 import argparse
 import os
+from pathlib import Path
 
 import confuse
 
+from bgm.environment import BaseEnvironment, Environment
+from bgm.environment_flagbased import FlagBasedEnvironment
 from bgm.music_player import MusicPlayer
 from bgm.music_state_machine import MusicStateMachine
 from bgm.process_service import ProcessService
@@ -30,7 +33,20 @@ def main() -> None:
         with open(userconfig_path, "w") as fs:
             fs.write(yaml)
 
-    MusicStateMachine(ProcessService(), MusicPlayer(), config).run()
+    restart = config["restart"].get()
+    mainprocess = config["mainprocess"].get()
+    process_service = ProcessService()
+    music_player = MusicPlayer()
+
+    is_retropie = Path("/opt/retropie/configs/all")
+    environment: BaseEnvironment
+    if is_retropie.exists():
+        environment = FlagBasedEnvironment(process_service, music_player, restart, mainprocess)
+    else:
+        stopper_processes = config["emulator_names"].get()
+        environment = Environment(process_service, music_player, restart, mainprocess, stopper_processes)
+
+    MusicStateMachine(process_service, music_player, config, environment).run()
 
 
 if __name__ == "__main__":

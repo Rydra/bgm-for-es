@@ -3,6 +3,7 @@
 import argparse
 import os
 import platform
+import shutil
 import subprocess
 import sys
 from io import UnsupportedOperation
@@ -52,6 +53,13 @@ def uninstall_from_pip():
     subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "es-bgm"])
 
 
+lines_to_add_to_autostart = [
+    # on startup, remove any musicpaused flag if present
+    "rm -f ~/.musicpaused.flag",
+    "/home/pi/.local/bin/esbgm > /dev/null 2>&1 &",
+]
+
+
 def add_autostart_script():
     """
     Places the autostart script to the appropriate folder
@@ -66,7 +74,9 @@ def add_autostart_script():
             if not line_found:
                 s = fs.read()
                 fs.seek(0)
-                fs.write("/home/pi/.local/bin/esbgm > /dev/null 2>&1 &\n" + s)
+                for linetowrite in lines_to_add_to_autostart:
+                    fs.write(f"{linetowrite}\n" + s)
+
     else:
         autostart_folder = Path(os.path.expanduser("~/.config/autostart"))
         if not autostart_folder.exists():
@@ -91,7 +101,7 @@ def remove_autostart_script():
             lines = fs.readlines()
         with AUTOSTART_RETROPIE_PATH.open("w") as fs:
             for line in lines:
-                if "esbgm" not in line:
+                if "esbgm" not in line and "musicpaused" not in line:
                     fs.write(line)
     else:
         desktop_entry = Path(os.path.expanduser("~/.config/autostart/esbgm.desktop"))
@@ -128,6 +138,26 @@ def add_menu_options():
         with ENABLE_BACKGROUND_MUSIC.open("w") as fs:
             fs.write("#/bin/bash\n")
             fs.write("rm -f ~/.config/esbgm/disable.flag\n")
+
+
+RUNCOMMAND_HOOKS_DIR = Path("/opt/retropie/configs/all")
+
+
+def add_runcommand_hooks():
+    if RUNCOMMAND_HOOKS_DIR.exists():
+        onstart = Path(RUNCOMMAND_HOOKS_DIR, "runcommand-onstart.sh")
+        if onstart.exists():
+            onstartorig = Path(RUNCOMMAND_HOOKS_DIR, "runcommand-onstart.sh.orig")
+            shutil.copy(onstart, onstartorig)
+        with onstart.open("w") as fs:
+            fs.write("touch ~/.musicpaused.flag")
+
+        onend = Path(RUNCOMMAND_HOOKS_DIR, "runcommand-onstart.sh")
+        if onend.exists():
+            onendorig = Path(RUNCOMMAND_HOOKS_DIR, "runcommand-onend.sh.orig")
+            shutil.copy(onend, onendorig)
+        with onend.open("w") as fs:
+            fs.write("rm -f ~/.musicpaused.flag")
 
 
 def remove_menu_options():
@@ -204,6 +234,7 @@ class Installer:
 
         install_from_pip()
         add_menu_options()
+        add_runcommand_hooks()
         add_autostart_script()
         create_default_music_folder()
 
