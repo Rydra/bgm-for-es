@@ -79,7 +79,8 @@ def add_autostart_script():
                 s = fs.read()
                 fs.seek(0)
                 for linetowrite in lines_to_add_to_autostart:
-                    fs.write(f"{linetowrite}\n" + s)
+                    fs.write(f"{linetowrite}\n")
+                fs.write(s)
 
     else:
         autostart_folder = Path(os.path.expanduser("~/.config/autostart"))
@@ -156,7 +157,7 @@ def add_runcommand_hooks():
         with onstart.open("w") as fs:
             fs.write("touch ~/.musicpaused.flag")
 
-        onend = Path(RUNCOMMAND_HOOKS_DIR, "runcommand-onstart.sh")
+        onend = Path(RUNCOMMAND_HOOKS_DIR, "runcommand-onend.sh")
         if onend.exists():
             onendorig = Path(RUNCOMMAND_HOOKS_DIR, "runcommand-onend.sh.orig")
             shutil.copy(onend, onendorig)
