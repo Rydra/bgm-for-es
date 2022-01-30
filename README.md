@@ -144,11 +144,11 @@ emulator_names:
 
 Description of the settings:
 
-| Option         | Default value            | Description                                                                                               |
-| -------------- | ------------------------ | --------------------------------------------------------------------------------------------------------- |
-| startdelay     | 0                        | How much time in second you want to wait once EmulationStation starts before playing the first song       |
-| musicdir       | /home/pi/RetroPie/music  | The directory where the music is placed and where it should be played                                     |
-| restart        | True                     | If True, resets the song from the beginning upon resuming                                                 |
-| startsong      | Empty                    | The exact name of the song you want to play in first place. Leave empty to let the player decide randomly |
-| mainprocess    | emulationstatio          | The name of the process which, when running, music will play                                              |
-| emulator_names | list of common emulators | The name of the processes which, when running, music will pause/stop                                      |
+| Option         | Default value            | Description                                                                                                     |
+| -------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| startdelay     | 0                        | How much time in second you want to wait once EmulationStation starts before playing the first song             |
+| musicdir       | /home/pi/RetroPie/music  | The directory where the music is placed and where it should be played                                           |
+| restart        | True                     | If True, resets the song from the beginning upon resuming                                                       |
+| startsong      | Empty                    | The exact name of the song you want to play in first place. Leave empty to let the player decide randomly       |
+| mainprocess    | emulationstatio          | The name of the process which, when running, music will play                                                    |
+| emulator_names | list of common emulators | The name of the processes which, when running, music will pause/stop (not necessary anymore since version 1.2.2 |
