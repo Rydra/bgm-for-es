@@ -2,7 +2,7 @@
 startdelay: 0
 
 # The directory where you will place your music in .mp3 or .ogg format
-musicdir: ~/RetroPie/music
+musicdir: ~/RetroPie/roms/music
 
 # Whether the music should restart upon unpausing or resume
 # from where it was left out.
