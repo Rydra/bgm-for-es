@@ -51,7 +51,7 @@ Select one or the other to enable or disable the background music
 
 ## How it works
 
-Place your music in .mp3 or .ogg format in the folder that will be created in `/home/pi/RetroPie/music`.
+Place your music in .mp3 or .ogg format in the folder that will be created in `/home/pi/RetroPie/roms/music`.
 You can change the folder where you place your music in the config file (see _Configuration_ section).
 Once you reboot and the script
 starts, a default config file will be created at `/home/pi/.config/esbgm/config.yaml`
@@ -72,7 +72,7 @@ once you start the `esbgm` script for the first time) contains the following con
 startdelay: 0
 
 # The directory where you will place your music in .mp3 or .ogg format
-musicdir: ~/RetroPie/music
+musicdir: ~/RetroPie/roms/music
 
 # Whether the music should restart upon unpausing or resume
 # from where it was left out.
